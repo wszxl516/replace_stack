@@ -1,15 +1,15 @@
+use std::convert::TryInto;
 use std::ffi::CString;
 use std::fs::File;
 use std::io;
 use std::io::BufRead;
-use std::time::Duration;
 
-struct ReplaceStack {
+pub struct ReplaceStack {
     stack: (usize, usize),
 }
 
 #[derive(Debug)]
-struct StrBlock(usize, usize);
+pub struct StrBlock(usize, usize);
 impl StrBlock{
     fn new(start: usize, len: usize)-> Self{
         Self{0: start, 1: len}
@@ -18,7 +18,7 @@ impl StrBlock{
 
 
 impl ReplaceStack {
-    fn new() -> Result<Self, ()> {
+    pub fn new() -> Result<Self, ()> {
         match Self::find_stack() {
             Ok(stack) => Ok(Self { stack }),
             Err(_) => Err(()),
@@ -46,7 +46,7 @@ impl ReplaceStack {
         }
         Err(())
     }
-    fn find_string_addr(&self, name: &String) -> Result<Vec<StrBlock>, ()> {
+    pub fn find_string_addr(&self, name: &String) -> Result<Vec<StrBlock>, ()> {
         let mut tmp = Vec::<u8>::new();
         let mut argv_addr = Vec::<StrBlock>::new();
         let (start, end) = self.stack;
@@ -78,7 +78,7 @@ impl ReplaceStack {
         }
         Ok(argv_addr)
     }
-    fn replace_string(block: StrBlock, name: &str) {
+    pub fn replace_string(block: StrBlock, name: &str) {
         let name_len = name.len();
         let str_ptr: &mut [u8] =
             unsafe { std::slice::from_raw_parts_mut(block.0 as *mut u8, block.1) };
@@ -86,22 +86,5 @@ impl ReplaceStack {
         for c in 0..name_len {
             str_ptr[c] = name.as_bytes()[c];
         }
-    }
-}
-
-fn main() {
-    let args = std::env::args();
-    let args_str = args.collect::<Vec<String>>();
-    let st = ReplaceStack::new().unwrap();
-    let argv_addr = st.find_string_addr(&args_str[0]).unwrap();
-    println!("argv: {:?}", argv_addr);
-    for addr in argv_addr {
-        ReplaceStack::replace_string(addr, "[test_name]");
-    }
-    loop {
-        let args = std::env::args();
-        let args_str = args.collect::<Vec<String>>();
-        println!("{}", args_str[0]);
-        std::thread::sleep(Duration::from_secs(1))
     }
 }

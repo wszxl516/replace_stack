@@ -1,8 +1,20 @@
 [package]
-name = "test__"
+name = "stack_replace"
 version = "0.1.0"
-edition = "2021"
+edition = "2018"
+license = "MIT"
+description = "simple container cli and lib!"
+homepage = "https://github.com/wszxl516/replace_stack.git"
+repository = "https://github.com/wszxl516/replace_stack.git"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
+[[bin]]
+name = "stack_replace"
+path = "src/bin/main.rs"
+
+[lib]
+name = "stack_replace"
+path = "src/lib.rs"
+plugin = false
+proc-macro = false
+harness = true
