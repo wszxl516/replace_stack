@@ -2,7 +2,7 @@
 
 ```c
     int main(int argc, char *argv[]){
-        argv[0] = "[new_name]";
+        strcpy(argv[0],"[new_name]");
         return 0;
     }
 ```
